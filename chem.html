@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemistry Syllabus Objective Randomizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+        .fade-out {
+            animation: fadeOut 0.3s ease-in-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4 sm:p-8">
+
+    <div class="max-w-3xl w-full bg-white rounded-3xl shadow-xl border border-slate-100 p-8 sm:p-12 text-center relative overflow-hidden">
+        <!-- Decorative Background Element -->
+        <div class="absolute -top-24 -right-24 w-48 h-48 bg-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-56 h-56 bg-indigo-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+
+        <div class="relative z-10">
+            <h1 class="text-sm font-bold tracking-widest text-indigo-500 uppercase mb-8">
+                H2 Chemistry Learning Objectives
+            </h1>
+
+            <div class="min-h-[160px] flex items-center justify-center mb-10">
+                <p id="objective-text" class="text-2xl sm:text-3xl font-medium text-slate-800 leading-snug transition-opacity duration-300">
+                    <!-- Objective will be injected here -->
+                </p>
+            </div>
+
+            <button id="generate-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0">
+                Show Random Objective
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Parsed Syllabus Objectives extracted from the provided "Collated LOs.pdf"
+        const objectives = [
+            "1(a) identify and describe protons, neutrons and electrons in terms of their relative charges and relative masses",
+            "1(b) deduce the behaviour of beams of protons, neutrons and electrons in an electric field",
+            "1(c) describe the distribution of mass and charges within an atom",
+            "1(d) deduce the numbers of protons, neutrons and electrons present in both atoms and ions given proton and nucleon numbers (and charge)",
+            "1(e) (i) describe the contribution of protons and neutrons to atomic nuclei in terms of proton number and nucleon number",
+            "1(e) (ii) distinguish between isotopes on the basis of different numbers of neutrons present",
+            "1(f) describe the number and relative energies of the s, p and d orbitals for the principal quantum numbers 1, 2 and 3 and also the 4s and 4p orbitals",
+            "1(g) describe the shapes of s, p and d orbitals [knowledge of wave functions is not required]",
+            "1(h) state the electronic configuration of atoms and ions given the proton number (and charge)",
+            "1(i) explain the factors influencing the ionisation energies of the elements (see the Data Booklet)",
+            "1(j) deduce the electronic configurations of elements from successive ionisation energy data",
+            "1(k) interpret successive ionisation energy data of an element in terms of the position of that element within the Periodic Table",
+            "2(a) show understanding that all chemical bonds are electrostatic in nature",
+            "2(b) describe, including the use of 'dot-and-cross' diagrams: ionic, covalent, and co-ordinate bonding",
+            "2(c) describe covalent bonding in terms of orbital overlap (limited to s and p orbitals only), giving σ and π bonds",
+            "2(d) explain the shapes of, and bond angles in, molecules such as BF3, CO2, CH4, NH3, H2O, SF6 by using the Valence Shell Electron Pair Repulsion theory",
+            "2(f) explain and deduce bond polarity using the concept of electronegativity",
+            "2(h) describe the following forces of attraction: intermolecular forces (permanent and induced dipoles) and hydrogen bonding",
+            "2(i) outline the importance of hydrogen bonding to the physical properties of substances, including ice and water",
+            "2(j) explain the terms bond energy and bond length for covalent bonds",
+            "2(l) describe, in simple terms, the lattice structure of a crystalline solid (ionic, simple molecular, giant molecular, hydrogen-bonded, metallic)",
+            "3(a) state the basic assumptions of the kinetic theory as applied to an ideal gas",
+            "3(b) explain qualitatively in terms of intermolecular forces and molecular size the conditions necessary for a gas to approach ideal behaviour",
+            "3(c) state and use the general gas equation pV=nRT in calculations, including the determination of Mr",
+            "3(d) use Dalton's Law to determine partial pressures of gases in a mixture",
+            "4(a) show understanding of, and apply the Arrhenius theory of acids and bases",
+            "4(b) show understanding of, and apply the Bronsted-Lowry theory of acids and bases",
+            "4(c) show understanding of, and apply the Lewis theory of acids and bases",
+            "5(a) recognise variation in the electronic configurations across a Period and down a Group",
+            "5(b) describe and explain qualitatively the general trends and variations in atomic radius, ionic radius, first ionisation energy",
+            "5(c) interpret the variation in melting point and in electrical conductivity across a Period in terms of structure and bonding in the elements",
+            "6(a) define the terms relative atomic, isotopic mass, and relative molecular formula mass",
+            "6(b) define the term mole in terms of Avogadro's constant",
+            "6(d) define the terms empirical and molecular formula",
+            "7(a) explain that most chemical reactions are accompanied by energy changes, principally in the form of heat",
+            "7(b) construct and interpret an energy profile diagram, in terms of the enthalpy change of the reaction and of the activation energy",
+            "7(c) explain and use the terms: enthalpy change of reaction, formation, combustion, hydration, solution, neutralisation, atomisation",
+            "7(g) explain and use the term entropy",
+            "7(j) state and use the equation involving standard Gibbs free energy change of reaction: ΔG = ΔH - TΔS",
+            "8(a) explain and use the terms: rate of reaction; rate equation; order of reaction; rate constant; half-life of a reaction; rate-determining step; activation energy; catalysis",
+            "8(g) show understanding, including reference to the Boltzmann distribution, of what is meant by the term activation energy",
+            "9(a) explain, in terms of rates of the forward and reverse reactions, what is meant by a reversible reaction and dynamic equilibrium",
+            "9(b) state Le Chatelier's Principle and apply it to deduce qualitatively the effects of changes in concentration, pressure or temperature, on a system at equilibrium",
+            "10.1(a) explain qualitatively the differences in behaviour between strong and weak acids and bases in terms of the extent of dissociation",
+            "10.1(b) explain the terms pH; Ka; pKa; Kb; pKb; Kw and apply them in calculations",
+            "10.1(f) explain how buffer solutions control pH",
+            "10.2(a) show understanding of, and apply, the concept of solubility product, Ksp",
+            "11.1(a) interpret, and use the nomenclature, general formulae and displayed formulae of various classes of compounds",
+            "11.2(a) describe constitutional (structural) isomerism",
+            "11.2(b) describe cis-trans isomerism in alkenes, and explain its origin in terms of restricted rotation due to the presence of π bonds",
+            "11.2(c) explain what is meant by a chiral centre",
+            "11.3(c) explain the general unreactivity of alkanes, including towards polar reagents",
+            "11.4(a) describe the chemistry of alkanes as exemplified by combustion and free-radical substitution",
+            "12(a) describe and explain redox processes in terms of electron transfer and/or of changes in oxidation number",
+            "12(b) define the terms: standard electrode (redox) potential and standard cell potential",
+            "13(a) explain that a transition element is a d block element whose atom has an incomplete d subshell, or which can give rise to cations with an incomplete d subshell",
+            "13(i) define the terms ligand and complex as exemplified by the complexes of copper(II) ions with water, ammonia and chloride ions as ligands"
+        ];
+
+        const objectiveElement = document.getElementById('objective-text');
+        const generateBtn = document.getElementById('generate-btn');
+        let currentIndex = -1;
+
+        function getRandomObjective() {
+            if (objectives.length === 0) return "No objectives found.";
+            
+            let newIndex;
+            // Ensure we don't pick the same objective twice in a row
+            do {
+                newIndex = Math.floor(Math.random() * objectives.length);
+            } while (newIndex === currentIndex && objectives.length > 1);
+            
+            currentIndex = newIndex;
+            return objectives[currentIndex];
+        }
+
+        function updateObjectiveUI() {
+            // Apply fade-out
+            objectiveElement.classList.remove('fade-in');
+            objectiveElement.classList.add('fade-out');
+
+            setTimeout(() => {
+                // Update text while invisible
+                objectiveElement.textContent = getRandomObjective();
+                
+                // Apply fade-in
+                objectiveElement.classList.remove('fade-out');
+                objectiveElement.classList.add('fade-in');
+            }, 300); // matches the duration of the fadeOut animation
+        }
+
+        // Event listener for button
+        generateBtn.addEventListener('click', updateObjectiveUI);
+
+        // Initialize with a random objective on load
+        objectiveElement.textContent = getRandomObjective();
+        objectiveElement.classList.add('fade-in');
+    </script>
+</body>
+</html>
